@@ -12,6 +12,7 @@ Author URI:
 require_once 'google-api-php-client/src/Google/Client.php';
 require_once 'google-api-php-client/vendor/autoload.php';
 require_once 'Wp_appointment_plugin_Settings.php'; // Options page class
+require_once 'GoogleCalendarRuleManager.php'; // Options page class
 
 $myPageName="services";
 
@@ -606,75 +607,11 @@ if(!isPageExist($myPageName)){
 if( is_admin() ) {
 	$wpappointment_settings = new Wp_appointment_plugin_Settings();
 	if ( isset( $_GET['settings-updated'] ) ) {
-		updateCalendarListTemplateList();
+		$googleCalendarRuleManager = new GoogleCalendarRuleManager();
+		$googleCalendarRuleManager->updateCalendarListTemplateList();
 		
 	}
 }
 
-function updateCalendarListTemplateList() {
-	$emailsSave = get_option( 'wp-appointment-plugin_options' )['calendar_emails'];
-	if($emailsSave == ""){
-		$emails = array();
-	}else{
-		$emails = explode (',', $emailsSave);
-		if(!$emails){
-			$emails = array();
-		}
-	}
-	$calendarId = getCalandarId();
-	$client = getClient();
-	$service = new Google_Service_Calendar($client);
-	cleanEmailMissing($service, $emails, $calendarId);
-	if(count($emails) > 0){
-		foreach ($emails as $email) {
-			if(!hasRole($service, $email, $calendarId)){
-				addRole($service, $email, $calendarId);
-			}
-		}
-	}
-}
 
-function cleanEmailMissing($service, $emails, $calendarId){
-	$acl = $service->acl->listAcl($calendarId);
-	foreach ($acl->getItems() as $rule) {
-		$found = false;
-		
-		if(strpos($rule->getScope()->getValue(), "@group.calendar.google.com") || strpos($rule->getScope()->getValue(), "gserviceaccount.com")){
-			$found = true;
-		}
-		if(count($emails) > 0){
-			foreach ($emails as $email) {
-				if($rule->getScope()->getValue() == $email){
-					$found = true;
-				}
-				
-			}
-		}
-		if(!$found){
-			$service->acl->delete($calendarId, $rule->getId());
-		}
-	}
-	return false;
-}
-
-function hasRole($service, $email, $calendarId){
-	$acl = $service->acl->listAcl($calendarId);
-	foreach ($acl->getItems() as $rule) {
-		if($rule->getScope()->getValue() == $email){
-			return true;
-		}
-	}
-	return false;
-}
-
-function addRole($service, $email, $calendarId){
-	$rule = new Google_Service_Calendar_AclRule();
-	$rule->setRole("writer");
-	$scope = new Google_Service_Calendar_AclRuleScope();
-	$scope->setType("user");
-	$scope->setValue($email);
-	$rule->setScope($scope);
-
-	$createdRule = $service->acl->insert($calendarId, $rule);
-}
 ?>
