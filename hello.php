@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: krack
+Plugin Name: wp-appointment-plugin
 Plugin URI: http://wordpress.org/plugins/hello-dolly/
 Description: Plugin to planned RDV with fixed times.
 Author: Sylvain Gandon
@@ -11,7 +11,7 @@ Author URI:
 
 require_once 'google-api-php-client/src/Google/Client.php';
 require_once 'google-api-php-client/vendor/autoload.php';
-require_once 'options-krack.php'; // Options page class
+require_once 'Wp_appointment_plugin_Settings.php'; // Options page class
 
 $myPageName="services";
 
@@ -604,7 +604,7 @@ if(!isPageExist($myPageName)){
 
 
 if( is_admin() ) {
-	$wpscss_settings = new Krack_Settings();
+	$wpappointment_settings = new Wp_appointment_plugin_Settings();
 	if ( isset( $_GET['settings-updated'] ) ) {
 		updateCalendarListTemplateList();
 		
@@ -612,7 +612,7 @@ if( is_admin() ) {
 }
 
 function updateCalendarListTemplateList() {
-	$emailsSave = get_option( 'krack_options' )['krack_emails'];
+	$emailsSave = get_option( 'wp-appointment-plugin_options' )['calendar_emails'];
 	if($emailsSave == ""){
 		$emails = array();
 	}else{
@@ -668,7 +668,6 @@ function hasRole($service, $email, $calendarId){
 }
 
 function addRole($service, $email, $calendarId){
-  
 	$rule = new Google_Service_Calendar_AclRule();
 	$rule->setRole("writer");
 	$scope = new Google_Service_Calendar_AclRuleScope();
@@ -678,7 +677,4 @@ function addRole($service, $email, $calendarId){
 
 	$createdRule = $service->acl->insert($calendarId, $rule);
 }
-
-
-$krack_options = get_option( 'krack_options' );
 ?>
