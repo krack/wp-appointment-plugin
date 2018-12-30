@@ -1,0 +1,110 @@
+.customize-support{
+    background-color: #fdedb2;
+}
+#calendar, .service{
+    position: relative;
+}
+.categorie > h1{
+    font-size: 3em;
+}
+.service{
+    border: solid 1px pink;
+    background-color: violet;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 25px;
+}
+ h2{
+    font-family: bahagia;
+    font-size: 2em;
+    color: gray;
+}
+ .time, .price, .service button{
+    position: absolute;
+    right: 10px;
+}
+.time{
+    top: 5px;
+}
+.price{
+    top: 30px;
+}
+.service button{
+    bottom: 10px;
+}
+
+.time::before{
+    font: normal normal normal 14px/1 FontAwesome;
+    content: "\f017";
+}
+.time::after{
+    content: "min";
+}
+.price::before{
+    font: normal normal normal 14px/1 FontAwesome;
+    content: "\f153";
+}
+
+table{
+    width: 100%;
+}
+td{
+    border: solid 1px black;
+}
+
+.hour{
+    background-color: gray;
+}
+.hour.worked, .hour.exOpen{
+    background-color: violet;
+}
+.hour.close{
+    background-color: lightpink;
+}
+.hour.past, .hour.busy{
+    background-color: gray;
+}
+.nav{
+    text-align: center;
+}
+.nav button{
+    display: inline-block;
+}
+.nav .previous{
+    float: left;
+}
+
+.nav .now{
+    margin: auto;
+}
+.nav .next{
+    float: right;
+}
+.previous, .next{
+    border: none;
+    background: none;
+    font-size: 0px;
+}
+.next{
+    text-align: right;
+}
+.previous::before{
+    font: normal normal normal 14px/1 FontAwesome;
+    content: "\f060";
+    
+}
+.next::before{
+    font: normal normal normal 14px/1 FontAwesome;
+    content: "\f061";
+    
+}
+
+#contact{
+    position: fixed;
+    margin: auto;
+    left: 50%;
+    top: 50%;
+    background-color: violet;
+    transform: translate(-50%, -70%);
+    transform-origin: 0 0;
+}
