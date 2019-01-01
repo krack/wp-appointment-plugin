@@ -21,43 +21,6 @@ $myPageName="services";
 //configuration
 $FREE_APPOINTMENT="free";
 
-define('SCOPES', implode(' ', array(
-	Google_Service_Calendar::CALENDAR) // CALENDAR_READONLY
-));
-putenv('GOOGLE_APPLICATION_CREDENTIALS='. __DIR__ .'/credentials/service-account.json');
-
-function getCalandarId(){
-	$client = getClient();
-	$service = new Google_Service_Calendar($client);
-	$calendarList = $service->calendarList->listCalendarList();
-	// if not exist, create calendar
-	if(count($calendarList->getItems()) == 0){
-		$calendar = new Google_Service_Calendar_Calendar();
-		$calendar->setSummary('Planning de Ongles et beauté');
-		$calendar->setTimeZone('Europe/Paris');
-		
-		$calendarId = $service->calendars->insert($calendar);
-	}else{
-		$calendarId = $calendarList->getItems()[0]->getId();
-	}
-	return $calendarId;
-
-}
-
-
-/**
- * Returns an authorized API client.
- * @return Google_Client the authorized client object
- */
-function getClient() {
-	$client = new Google_Client();
-	$client->useApplicationDefaultCredentials();
-	$client->setScopes(SCOPES);
-  
-	return $client;
-  }
-  
-
   
   
 
@@ -151,37 +114,13 @@ function registerAppointment( WP_REST_Request $request ) {
 	if($selectedService == null){
 		return new WP_REST_Response( 400 );
 	}
-	$data = createAppointment($selectedService, $element);
+	$appointmentManager =new GoogleCalendarAppointmentManager();
+	$data = $appointmentManager->createAppointment($selectedService, $element);
 		
 	return new WP_REST_Response($data, 200 );
 }
 
-function createAppointment($selectedService, $order){
 
-	$startDate=new DateTime($order['date']);
-	$endDate=new DateTime($order['date']);
-	$endDate->add(new DateInterval('PT'.$selectedService->during.'M'));
-
-
-
-	$startCalendarDateTime = new \Google_Service_Calendar_EventDateTime();
-	$startCalendarDateTime->setDateTime($startDate->format(\DateTime::RFC3339));
-
-	$endCalendarDateTime = new \Google_Service_Calendar_EventDateTime();
-	$endCalendarDateTime->setDateTime($endDate->format(\DateTime::RFC3339));
-
-	$event = new Google_Service_Calendar_Event(array(
-		'summary' => $order['name']." : ".$selectedService->name,
-		'description' => 'RDV de '.$order['name']." pour ".$selectedService->name.". Numéro de téléphone : ".$order['phone'],
-		'start' => $startCalendarDateTime,
-		'end' => $endCalendarDateTime
-	));
-
-	$calendarId = getCalandarId();
-	$client = getClient();
-	$service = new Google_Service_Calendar($client);
-	$event = $service->events->insert($calendarId, $event);
-}
 
 function get_appointment(){
 	$appointmentManager =new GoogleCalendarAppointmentManager();

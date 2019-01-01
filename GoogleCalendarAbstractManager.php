@@ -1,4 +1,11 @@
 <?php
+
+
+define('SCOPES', implode(' ', array(
+	Google_Service_Calendar::CALENDAR) // CALENDAR_READONLY
+));
+putenv('GOOGLE_APPLICATION_CREDENTIALS='. __DIR__ .'/credentials/service-account.json');
+
 class GoogleCalendarAbstractManager
 {
   
@@ -8,7 +15,7 @@ class GoogleCalendarAbstractManager
     }
 
     protected function getCalandarId(){
-        $client = getClient();
+        $client = $this->getClient();
         $service = new Google_Service_Calendar($client);
         $calendarList = $service->calendarList->listCalendarList();
         // if not exist, create calendar
