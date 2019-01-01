@@ -13,6 +13,8 @@ require_once 'google-api-php-client/src/Google/Client.php';
 require_once 'google-api-php-client/vendor/autoload.php';
 require_once 'Wp_appointment_plugin_Settings.php'; // Options page class
 require_once 'GoogleCalendarRuleManager.php'; // Options page class
+require_once 'ProductDao.php'; // Options page class
+require_once 'GoogleCalendarAppointmentManager.php'; // Options page class
 
 $myPageName="services";
 
@@ -23,314 +25,6 @@ define('SCOPES', implode(' ', array(
 	Google_Service_Calendar::CALENDAR) // CALENDAR_READONLY
 ));
 putenv('GOOGLE_APPLICATION_CREDENTIALS='. __DIR__ .'/credentials/service-account.json');
-
-
-$proposedServices = array(
-	array(
-		'id' => 1,
-		'name' => 'Pose de vernis permanent mains ou pieds',
-		'describe' => '',
-		'price' =>  28,
-		'during' => 45,
-		'categories' => 'Les ongles'
-	),
-	array(
-		'id' => 2,
-		'name' => 'Forfait vernis permanent mains et pieds',
-		'describe' => '',
-		'price' =>  45,
-		'during' => 90,
-		'categories' => 'Les ongles'
-	),
-	array(
-		'id' => 3,
-		'name' => 'Pose d\'ongles rallonge tips ou chablon méthode gel ou résine',
-		'describe' => '',
-		'price' =>  40,
-		'during' => 75,
-		'categories' => 'Les ongles'
-	),
-	array(
-		'id' => 4,
-		'name' => 'Pose d\'ongles rallonge tips ou chablon méthode gel ou résine avec vernis permanent',
-		'describe' => '',
-		'price' =>  50,
-		'during' => 75,
-		'categories' => 'Les ongles'
-	),
-	array(
-		'id' => 5,
-		'name' => 'Remplissage ou gainage ongles naturels',
-		'describe' => '',
-		'price' =>  30,
-		'during' => 60,
-		'categories' => 'Les ongles'
-	),
-	array(
-		'id' => 6,
-		'name' => 'Remplissage ou gainage ongles naturels avec vernis permanent',
-		'describe' => '',
-		'price' =>  40,
-		'during' => 90,
-		'categories' => 'Les ongles'
-	),
-	array(
-		'id' => 7,
-		'name' => 'Remplissage ou gainage ongles naturels',
-		'describe' => '',
-		'price' =>  30,
-		'during' => 60,
-		'categories' => 'Les ongles'
-	),
-	array(
-		'id' => 8,
-		'name' => 'Remplissage ou gainage ongles naturels avec vernis permanent',
-		'describe' => '',
-		'price' =>  40,
-		'during' => 90,
-		'categories' => 'Les ongles'
-	),
-	array(
-		'id' => 9,
-		'name' => 'Manucurie traditionnelle complète',
-		'describe' => '',
-		'price' =>  17,
-		'during' => 45,
-		'categories' => 'Les ongles'
-	),
-	array(
-		'id' => 10,
-		'name' => 'Soin des pieds',
-		'describe' => '',
-		'price' =>  20,
-		'during' => 45,
-		'categories' => 'Les ongles'
-	),
-	array(
-		'id' => 11,
-		'name' => 'Pose de vernis mains ou pieds',
-		'describe' => '',
-		'price' =>  8,
-		'during' => 30,
-		'categories' => 'Les ongles'
-	),
-	array(
-		'id' => 12,
-		'name' => 'Maquillage jour',
-		'describe' => '',
-		'price' =>  18,
-		'during' => 30,
-		'categories' => 'Le maquillage'
-	),
-	array(
-		'id' => 13,
-		'name' => 'Maquillage soirée ou mariée',
-		'describe' => '',
-		'price' =>  25,
-		'during' => 45,
-		'categories' => 'Le maquillage'
-	),
-	array(
-		'id' => 14,
-		'name' => 'Cours d’automaquillage',
-		'describe' => '',
-		'price' =>  35,
-		'during' => 60,
-		'categories' => 'Le maquillage'
-	),
-	array(
-		'id' => 15,
-		'name' => 'Teinture cils',
-		'describe' => '',
-		'price' =>  15,
-		'during' => 30,
-		'categories' => 'Le maquillage'
-	),
-	array(
-		'id' => 16,
-		'name' => 'Teinture sourcils',
-		'describe' => '',
-		'price' =>  12,
-		'during' => 15,
-		'categories' => 'Le maquillage'
-	),
-	array(
-		'id' => 17,
-		'name' => 'Sourcils',
-		'describe' => '',
-		'price' =>  7,
-		'during' => 15,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 18,
-		'name' => 'Lèvre',
-		'describe' => '',
-		'price' =>  6,
-		'during' => 15,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 19,
-		'name' => 'Menton',
-		'describe' => '',
-		'price' =>  7,
-		'during' => 15,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 20,
-		'name' => 'Demi - jambes',
-		'describe' => '',
-		'price' =>  14,
-		'during' => 30,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 21,
-		'name' => 'Jambes entières',
-		'describe' => '',
-		'price' =>  22,
-		'during' => 45,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 22,
-		'name' => 'Aisselles ou maillot',
-		'describe' => '',
-		'price' =>  10,
-		'during' => 20,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 23,
-		'name' => 'Maillot intégral',
-		'describe' => '',
-		'price' =>  25,
-		'during' => 45,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 24,
-		'name' => 'Forfait demi-jambes+maillot+aisselles',
-		'describe' => '',
-		'price' =>  28,
-		'during' => 60,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 25,
-		'name' => 'Forfait jambes entières+maillot+aisselles',
-		'describe' => '',
-		'price' =>  36,
-		'during' => 75,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 26,
-		'name' => 'Bras',
-		'describe' => '',
-		'price' =>  13,
-		'during' => 30,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 27,
-		'name' => 'Torse',
-		'describe' => '',
-		'price' =>  17,
-		'during' => 30,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 28,
-		'name' => 'Dos',
-		'describe' => '',
-		'price' =>  18,
-		'during' => 30,
-		'categories' => 'Les épilations'
-	),
-	array(
-		'id' => 29,
-		'name' => 'Soin jeune',
-		'describe' => '',
-		'price' =>  32,
-		'during' => 60,
-		'categories' => 'Les soins visage'
-	),
-	array(
-		'id' => 30,
-		'name' => 'Soin visage cocooning',
-		'describe' => '',
-		'price' =>  42,
-		'during' => 90,
-		'categories' => 'Les soins visage'
-	),
-	array(
-		'id' => 31,
-		'name' => 'Soin yeux',
-		'describe' => '',
-		'price' =>  12,
-		'during' => 20,
-		'categories' => 'Les soins visage'
-	),
-	array(
-		'id' => 32,
-		'name' => 'Soin homme',
-		'describe' => '',
-		'price' =>  35,
-		'during' => 60,
-		'categories' => 'Les soins visage'
-	),
-	array(
-		'id' => 33,
-		'name' => 'Gommage corps',
-		'describe' => '',
-		'price' =>  30,
-		'during' => 30,
-		'categories' => 'Les soins corps'
-	),
-	array(
-		'id' => 34,
-		'name' => 'Soin du dos détente',
-		'describe' => 'gommage +massage+masque chaud enveloppant',
-		'price' =>  45,
-		'during' => 60,
-		'categories' => 'Les soins corps'
-	),
-	array(
-		'id' => 35,
-		'name' => 'Massage californien',
-		'describe' => '',
-		'price' =>  60,
-		'during' => 60,
-		'categories' => 'Les soins corps'
-	),
-	array(
-		'id' => 36,
-		'name' => 'Modelage pierres chaudes',
-		'describe' => '',
-		'price' =>  75,
-		'during' => 90,
-		'categories' => 'Les soins corps'
-	),
-	array(
-		'id' => 37,
-		'name' => 'Massage enfant - 7/13 ans',
-		'describe' => '',
-		'price' =>  30,
-		'during' => 30,
-		'categories' => 'Les soins corps'
-	),
-	array(
-		'id' => 38,
-		'name' => 'Drainage esthétique minceur',
-		'describe' => '',
-		'price' =>  38,
-		'during' => 45,
-		'categories' => 'Les soins corps'
-	)
-);
 
 function getCalandarId(){
 	$client = getClient();
@@ -368,8 +62,10 @@ function getClient() {
   
 
 function get_items( $request ) {
+	$productDao = new ProductDao();
+	$results = $productDao->getAll();
 
-	return new WP_REST_Response( $GLOBALS['proposedServices'], 200 );
+	return new WP_REST_Response( $results, 200 );
 }
 
 function get_workingDays( $request ) {
@@ -450,25 +146,21 @@ function get_workingDays( $request ) {
 function registerAppointment( WP_REST_Request $request ) {
 
 	$element = $request->get_json_params();
-	$selectedService = null;
-	foreach ($GLOBALS['proposedServices'] as $service) {
-		if($service["id"] == $element['type']){
-			$selectedService = $service;
-		}
-	}
+	$productDao = new ProductDao();
+	$selectedService = $productDao->get($element['type']);
 	if($selectedService == null){
 		return new WP_REST_Response( 400 );
 	}
-
 	$data = createAppointment($selectedService, $element);
 		
 	return new WP_REST_Response($data, 200 );
 }
 
 function createAppointment($selectedService, $order){
+
 	$startDate=new DateTime($order['date']);
 	$endDate=new DateTime($order['date']);
-	$endDate->add(new DateInterval('PT'.$selectedService['during'].'M'));
+	$endDate->add(new DateInterval('PT'.$selectedService->during.'M'));
 
 
 
@@ -479,11 +171,12 @@ function createAppointment($selectedService, $order){
 	$endCalendarDateTime->setDateTime($endDate->format(\DateTime::RFC3339));
 
 	$event = new Google_Service_Calendar_Event(array(
-		'summary' => $order['name']." : ".$selectedService['name'],
-		'description' => 'RDV de '.$order['name']." pour ".$selectedService['name'].". Numéro de téléphone : ".$order['phone'],
+		'summary' => $order['name']." : ".$selectedService->name,
+		'description' => 'RDV de '.$order['name']." pour ".$selectedService->name.". Numéro de téléphone : ".$order['phone'],
 		'start' => $startCalendarDateTime,
 		'end' => $endCalendarDateTime
 	));
+
 	$calendarId = getCalandarId();
 	$client = getClient();
 	$service = new Google_Service_Calendar($client);
@@ -491,18 +184,8 @@ function createAppointment($selectedService, $order){
 }
 
 function get_appointment(){
-	$client = getClient();
-	$service = new Google_Service_Calendar($client);
-	$calendarId = getCalandarId();
-	$events = $service->events->listEvents($calendarId);
-	$data = array();
-	foreach ($events->getItems() as $event) {
-		array_push($data, array(
-			'start' =>(new DateTime($event->start->dateTime))->format(DateTime::ISO8601),
-			'end' =>(new DateTime($event->end->dateTime))->format(DateTime::ISO8601),
-			'free' => ($event->summary == $GLOBALS["FREE_APPOINTMENT"])
-		));
-	}
+	$appointmentManager =new GoogleCalendarAppointmentManager();
+	$data = $appointmentManager->getAppointments();
 
 	return new WP_REST_Response($data, 201 );
 }
@@ -611,7 +294,124 @@ if( is_admin() ) {
 		$googleCalendarRuleManager->updateCalendarListTemplateList();
 		
 	}
+	add_action( 'admin_menu', 'configure_admin_menu' );
+	
+	
+
 }
+function configure_admin_menu(){
+	add_menu_page('Activity title', 'Activity', 'manage_options', 'activity', 'my_magic_function');
+
+}
+function my_magic_function(){
+	echo "<div class=\"wrap\">";
+	echo "<h1>Product of your activity</h1>";
+	echo "<p>La liste des prestations que proposées</p>";
+	
+	if ( isset( $_GET['edit'] ) ) {
+		updateData($_GET['edit']);
+		printForm($_GET['edit']); 
+	}else{
+		doElementAction();
+		printList();
+	}
+
+	echo "</div>";
+
+}
+
+function updateData($id){
+	global $wpdb;
+	if ( isset( $_POST['name'] ) ) {
+		$data = array( 
+			'name' => $_POST['name'],
+			'describe' => $_POST['describe'],
+			'price' => $_POST['price'],
+			'during' => $_POST['during'],
+			'categorie' =>  $_POST['categorie']
+		);
+
+		$productDao = new ProductDao();
+		if($id == 0){
+			echo "insert ok ".$_POST['name'];
+			$productDao->insert($data);
+		}else{
+			echo "sauvegarde ok ".$_POST['name'];
+			$productDao->update($id, $data);
+		}
+	}
+}
+
+function doElementAction(){
+
+	//remove data
+	if ( isset( $_GET['remove'] ) ) {
+		$productDao = new ProductDao();
+		$productDao->delete($_GET['remove']);
+	}
+}
+
+function printForm($id){
+	
+
+	$productDao = new ProductDao();
+	$result = $productDao->get($id);
+	?>
+	<form method="post" >
+		<label for="name" >name :</label><input type="text" id="name" name="name" value="<?php echo $result->name ?>" /> <br />
+		<label for="price" >price :</label><input type="text" id="price" name="price" value="<?php echo $result->price ?>" />€<br />
+		<label for="during" >during :</label><input type="text" id="during" name="during" value="<?php echo $result->during ?>" />min<br />
+		<label for="categorie" >categorie :</label><input type="text" id="categorie" name="categorie" value="<?php echo $result->categorie ?>" /><br />
+		<label for="describe" >describe :</label><textarea id="describe" name="describe"><?php echo $result->describe ?></textarea>
+
+		<?php
+			submit_button(); 
+		?>
+    </form>
+	<?php
+}
+
+function printList(){
+
+	$productDao = new ProductDao();
+	$results = $productDao->getAll();
+	$actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+	?>
+	<table>
+	<tr>
+			<th>name</th>
+			<th>price (€)</th>
+			<th>during (min)</th>
+			<th>describe</th>
+			<th>categorie</th>
+			<th></th>
+		
+		</tr>
+	<?php
+	foreach($results as $result){		
+		?>
+			<tr>
+				<td><a href="<?php echo $actual_link ?>&edit=<?php echo $result->id ?>"><?php echo $result->name ?></a></td>
+				<td><?php echo $result->price ?></td>
+				<td><?php echo $result->during ?></td>
+				<td><?php echo $result->describe ?></td>
+				<td><?php echo $result->categorie ?></td>
+				<td><a href="<?php echo $actual_link ?>&remove=<?php echo $result->id ?>">delete</a></td>
+			
+			</tr>
+		<?php 
+	}
+	?>
+	</table>
+	<a href="<?php echo $actual_link ?>&edit=0">add</a>
+	<?php
+}
+function products_install() {
+	$productDao = new ProductDao();
+	$productDao->createTable();
+}
+
+register_activation_hook( __FILE__, 'products_install' );
 
 
 ?>

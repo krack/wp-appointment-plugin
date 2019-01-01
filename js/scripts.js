@@ -29,7 +29,7 @@
                     this.services = response.body;
                     var categories = {};
                     for (var i = 0; i < this.services.length; i++) {
-                        var categorie = this.services[i].categories;
+                        var categorie = this.services[i].categorie;
                         if (!categories[categorie]) {
                             categories[categorie] = {
                                 "name": categorie,
@@ -73,16 +73,16 @@
                     this.loadWeek();
                 });
             },
-            order: function (id) {
+            order: function (service) {
                 this.view = 'calendar';
-                this.selectedServiceIndex = id - 1;
+                this.selectedService = service;
                 this.loadWorkingDay();
                 this.loadAppointment();
 
             },
             cancelOrder: function () {
                 this.view = 'services';
-                this.selectedServiceIndex = -1;
+                this.selectedService = null;
             },
             isAppointmentHour: function (day, hour, checkFree) {
                 var busy = false;
@@ -235,7 +235,7 @@
                     status += "busy "
                 }
 
-                if (this.isSoCloseHour(day, hour, this.services[this.selectedServiceIndex].during)) {
+                if (this.isSoCloseHour(day, hour, this.selectedService.during)) {
                     status += "close "
                 }
                 return status;
@@ -257,7 +257,7 @@
             },
             confirm() {
                 var appointment = {
-                    'type': this.services[this.selectedServiceIndex].id,
+                    'type': this.selectedService.id,
                     'date': this.selectedStartDate,
                     'name': this.name,
                     'phone': this.phone
@@ -266,7 +266,7 @@
                 this.$http.post('/wp-json/krack/v1/appointment', appointment).then((response) => {
                     this.appointments = response.body;
                     this.selectedStartDate = null;
-                    this.selectedService = 0;
+                    this.selectedService = null;
                     alert("Rendez vous confirmé");
                     this.contact = false;
 
