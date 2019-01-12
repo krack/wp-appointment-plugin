@@ -7,7 +7,7 @@
             <h1>{{ categorie.name }}</h1>
             <div v-for="service in categorie.services" class="service">
                 <h2>{{ service.name }}</h2>
-                <p>{{ service.describe }}</p>
+                <pre>{{ service.describe }}</pre>
                 <span class="price">{{ service.price }}</span>
                 <span class="time">{{ service.during }}</span>
                 <button v-on:click="order(service)" title="Réserver en ligne">Réserver</button>
@@ -18,7 +18,7 @@
 
         <button v-on:click="cancelOrder()">retour</button>
         <h2>{{selectedService.name}}</h2>
-        <p>{{selectedService.describe}}</p>
+        <pre>{{selectedService.describe}}</pre>
         <span class="price">{{selectedService.price}}</span>
         <span class="time">{{selectedService.during }}</span>
 

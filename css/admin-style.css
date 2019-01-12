@@ -1,0 +1,34 @@
+.wp-appointment-plugin-admin{
+}
+
+/*
+Form 
+*/
+.wp-appointment-plugin-admin label{
+    padding-left : 10px;
+    width: 150px;
+    display: inline-block;
+}
+.wp-appointment-plugin-admin textarea{
+    width: 100%;
+    min-height: 200px;
+}
+
+/*
+list
+*/
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+/**
+button
+*/
+.button i.fas{
+    margin-right: 5px;
+}

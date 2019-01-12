@@ -40,7 +40,8 @@ class ProductDao
         global $wpdb;
         $data["describe_product"] = $data["describe"];
 		unset($data["describe"]);
-		$wpdb->insert( "{$this->$table_name}",$data );
+        $wpdb->insert( "{$this->$table_name}",$data );
+       return $wpdb->insert_id;;
     }
     
     public function update($id, $data){
