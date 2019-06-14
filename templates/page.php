@@ -23,7 +23,7 @@
         <span class="time">{{selectedService.during }}</span>
 
 
-        <div id="planning">
+        <div id="planning" v-bind:class="{ unloaded: !appointementLoaded }">
             <div class="nav">
                 <button v-on:click="changeWeek(-1)" class="previous">previous</button>
                 <button v-on:click="resetWeek()" class="now" >Aujourd'hui</button>

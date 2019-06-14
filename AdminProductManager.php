@@ -20,7 +20,7 @@ class AdminProductManage
 
     public function test(){
         ?>
-        <div class="wrap wp-appointment-plugin-admin">"
+        <div class="wrap wp-appointment-plugin-admin">
             <h1>Product of your activity</h1>  
             <p>La liste des prestations que proposées</p>
         <?php
@@ -48,13 +48,12 @@ class AdminProductManage
     
             $productDao = new ProductDao();
             if($id == 0){
-                print( "insertion ok");
+                //print( "insertion ok");
                 $id= $productDao->insert($data);
                 $actual_link = $this->getCurrentUlr();
                 $realLink = str_replace('edit=0', 'edit='.$id, $actual_link);
-                if ( wp_redirect( $realLink ) ) {
-                    exit;
-                }
+                print("<script type='text/javascript'>window.location.href='{$realLink}'</script>");
+                exit;
             }else{
                 print( "sauvegarde ok ");
                 $productDao->update($id, $data);

@@ -19,7 +19,9 @@
     font-size: 2em;
     color: gray;
 }
- .time, .price, .service button{
+
+
+.time, .price, .service button{
     position: absolute;
     right: 10px;
 }
@@ -52,6 +54,10 @@ td{
     border: solid 1px black;
 }
 
+
+.unloaded .hour{
+    background-color: gray !important;
+}
 .hour{
     background-color: gray;
 }
@@ -64,6 +70,9 @@ td{
 .hour.past, .hour.busy{
     background-color: gray;
 }
+
+
+
 .nav{
     text-align: center;
 }

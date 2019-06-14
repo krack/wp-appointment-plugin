@@ -17,7 +17,7 @@ require_once 'ProductDao.php'; // Options page class
 require_once 'GoogleCalendarAppointmentManager.php'; // Options page class
 require_once 'AdminProductManager.php'; // Options page class
 
-$myPageName="services";
+$myPageNameAppointmentPlugin="services2";
 
 //configuration
 $FREE_APPOINTMENT="free";
@@ -25,14 +25,14 @@ $FREE_APPOINTMENT="free";
   
   
 
-function get_items( $request ) {
+function get_itemsAppointmentPlugin( $request ) {
 	$productDao = new ProductDao();
 	$results = $productDao->getAll();
 
 	return new WP_REST_Response( $results, 200 );
 }
 
-function get_workingDays( $request ) {
+function get_workingDaysAppointmentPlugin( $request ) {
 	$data = array(
 		array(
 			'day' => 'Lundi',
@@ -107,15 +107,18 @@ function get_workingDays( $request ) {
 	return new WP_REST_Response( $data, 200 );
 }
 
-function registerAppointment( WP_REST_Request $request ) {
+function registerAppointmentAppointmentPlugin( WP_REST_Request $request ) {
 
 	$element = $request->get_json_params();
 	$productDao = new ProductDao();
 	$selectedService = $productDao->get($element['type']);
 	if($selectedService == null){
-		return new WP_REST_Response( 400 );
+		return new WP_Error( '400_SERVICE_NOT_EXIST', 'Service type not exist', array( 'status' => 400 ) );
 	}
 	$appointmentManager =new GoogleCalendarAppointmentManager();
+	if($appointmentManager->existEventInSameTime($selectedService, $element)){
+		return new WP_Error( '403_APPOINTMENT', 'Already exist appointment', array( 'status' => 403 ) );
+	}
 	$data = $appointmentManager->createAppointment($selectedService, $element);
 		
 	return new WP_REST_Response($data, 200 );
@@ -123,7 +126,7 @@ function registerAppointment( WP_REST_Request $request ) {
 
 
 
-function get_appointment(){
+function get_appointmentAppointmentPlugin(){
 	$appointmentManager =new GoogleCalendarAppointmentManager();
 	$data = $appointmentManager->getAppointments();
 
@@ -133,33 +136,33 @@ function get_appointment(){
 add_action( 'rest_api_init', function () {
 
 	$version = '1';
-    $namespace = 'krack/v' . $version;
+    $namespace = 'appointment-plugin/v' . $version;
     $baseService = 'services';
     register_rest_route( $namespace, '/' . $baseService, array(
 	  'methods' =>  'GET',
-	  'callback'=> 'get_items',
+	  'callback'=> 'get_itemsAppointmentPlugin',
 	) );
 
     $baseWorkingDay = 'workingDay';
 	register_rest_route( $namespace, '/' . $baseWorkingDay, array(
 		'methods' =>  'GET',
-		'callback'=> 'get_workingDays',
+		'callback'=> 'get_workingDaysAppointmentPlugin',
 	  ) );
 
 	$baseAppointment = 'appointment';
 	register_rest_route( $namespace, '/' . $baseAppointment, array(
 		'methods' =>  'POST',
-		'callback'=> 'registerAppointment',
+		'callback'=> 'registerAppointmentAppointmentPlugin',
 	  ) );
 	  register_rest_route( $namespace, '/' . $baseAppointment, array(
 		'methods' =>  'GET',
-		'callback'=> 'get_appointment',
+		'callback'=> 'get_appointmentAppointmentPlugin',
 	  ) );
   } );
 
 
-function wptuts_scripts_basic(){
-	if ( is_page( $GLOBALS['myPageName'] ) ) {
+function wptuts_scripts_basicAppointmentPlugin(){
+	if ( is_page( $GLOBALS['myPageNameAppointmentPlugin'] ) ) {
 		// Deregister the included library
 		wp_deregister_script( 'vuejs' );
 		wp_deregister_script( 'vue-resource' );
@@ -183,10 +186,10 @@ function wptuts_scripts_basic(){
 	}
 	
 }
-add_action( 'wp_enqueue_scripts', 'wptuts_scripts_basic' );
+add_action( 'wp_enqueue_scripts', 'wptuts_scripts_basicAppointmentPlugin' );
 
 
-function createPage($pageName){
+function createPageAppointmentPlugin($pageName){
 	$my_post = array(
 		'post_title' => $pageName,
 		'post_content' => '',
@@ -196,9 +199,11 @@ function createPage($pageName){
 	);
 	wp_insert_post( $my_post );
 }
-function isPageExist($pageName){
+function isPageExistAppointmentPlugin($pageName){
 	
-	$pages = get_pages(); 
+	$pages = get_pages(array(
+		'post_status'  => array('publish', 'private')
+	)); 
 	foreach ( $pages as $page ) {
 		if($page->post_title === $pageName){
 			return true;
@@ -209,10 +214,10 @@ function isPageExist($pageName){
 
 
 
-add_action( 'template_include', 'override_page_template' );
+add_action( 'template_include', 'override_page_templateAppointmentPlugin' );
 
-function override_page_template( $template ) {
-	if ( is_page( $GLOBALS['myPageName'] ) ) {
+function override_page_templateAppointmentPlugin( $template ) {
+	if ( is_page( $GLOBALS['myPageNameAppointmentPlugin'] ) ) {
 		$new_template = plugin_dir_path( __FILE__ ).'templates/page.php';
 		if ( !empty( $new_template ) ) {
 			return $new_template;
@@ -222,8 +227,8 @@ function override_page_template( $template ) {
 	return $template;
 }
 
-if(!isPageExist($myPageName)){
-	createPage($myPageName);
+if(!isPageExistAppointmentPlugin($myPageNameAppointmentPlugin)){
+	createPageAppointmentPlugin($myPageNameAppointmentPlugin);
 }
  
 

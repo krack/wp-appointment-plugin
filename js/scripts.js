@@ -17,7 +17,8 @@
             selectedStartDate: null,
             weekDiff: 0,
             name: null,
-            phone: null
+            phone: null,
+            appointementLoaded: false
         },
         created: function () {
             this.loadServices();
@@ -25,7 +26,7 @@
         methods: {
             loadServices() {
 
-                this.$http.get('/wp-json/krack/v1/services').then((response) => {
+                this.$http.get('/wp-json/appointment-plugin/v1/services').then((response) => {
                     this.services = response.body;
                     var categories = {};
                     for (var i = 0; i < this.services.length; i++) {
@@ -43,14 +44,15 @@
                 });
             },
             loadAppointment() {
-                this.$http.get('/wp-json/krack/v1/appointment').then((response) => {
+                this.$http.get('/wp-json/appointment-plugin/v1/appointment').then((response) => {
                     this.appointments = response.body;
                     this.workingDay = this.workingDay.slice(0);
                     this.loadWeek();
+                    this.appointementLoaded = true;
                 });
             },
             loadWorkingDay() {
-                this.$http.get('/wp-json/krack/v1/workingDay').then((response) => {
+                this.$http.get('/wp-json/appointment-plugin/v1/workingDay').then((response) => {
                     var self = this;
                     this.workingDay = response.body;
                     this.workingDay.forEach(function (day) {
@@ -76,6 +78,7 @@
             order: function (service) {
                 this.view = 'calendar';
                 this.selectedService = service;
+                this.appointementLoaded = false;
                 this.loadWorkingDay();
                 this.loadAppointment();
 
@@ -113,9 +116,9 @@
                     hourEnd.setMinutes((hour.min + 15));
                     hourEnd = cleanDate(hourEnd);
 
-                    if (appointmentStartDate <= hourStart && appointmentEndDate >= hourEnd) {
-
-
+                    if (
+                        (hourStart <= appointmentStartDate && appointmentStartDate <= hourEnd)
+                        || (hourStart <= appointmentEndDate && appointmentEndDate <= hourEnd)) {
                         busy = true;
                     }
                 });
@@ -241,8 +244,9 @@
                 return status;
             },
             select(day, hour, during) {
-                console.log("isWorkedHour " + this.isWorkedHour(day, hour));
-                console.log("isAppointmentHour " + this.isAppointmentHour(day, hour, true));
+                if (!this.appointementLoaded) {
+                    return;
+                }
                 if ((this.isWorkedHour(day, hour) || this.isAppointmentHour(day, hour, true)) && !this.isPast(day, hour) && !this.isAppointmentHour(day, hour, false) && !this.isSoCloseHour(day, hour, during)) {
                     this.contact = true;
                     var date = new Date(day.date);
@@ -263,14 +267,16 @@
                     'phone': this.phone
                 };
 
-                this.$http.post('/wp-json/krack/v1/appointment', appointment).then((response) => {
+                this.$http.post('/wp-json/appointment-plugin/v1/appointment', appointment).then((response) => {
                     this.appointments = response.body;
                     this.selectedStartDate = null;
                     this.selectedService = null;
                     alert("Rendez vous confirmé");
                     this.contact = false;
 
-                    this.view = 'services'
+                    this.view = 'services';
+                }, (err) => {
+                    alert("Erreur!!\nRendez vous non pris. Veuillez réassayer.");
                 });
             },
             loadWeek() {

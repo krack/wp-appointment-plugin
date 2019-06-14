@@ -21,7 +21,7 @@ class Wp_appointment_plugin_Settings
     public function add_plugin_page()
     {
         // This page will be under "Settings"
-        add_options_page( 'wp-appointment-plugin_options', 'wp-appointment-plugin', 'manage_options', 'krack-wp-appointment-plugin', array( $this, 'create_admin_page' ) );
+        add_options_page( 'wp-appointment-plugin_options', 'wp-appointment-plugin', 'manage_options', 'wp-appointment-plugin', array( $this, 'create_admin_page' ) );
     }
 
     /**

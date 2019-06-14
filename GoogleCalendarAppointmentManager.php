@@ -14,7 +14,10 @@ class GoogleCalendarAppointmentManager extends GoogleCalendarAbstractManager
         $client = $this->getClient();
         $service = new Google_Service_Calendar($client);
         $calendarId = $this->getCalandarId();
-        $events = $service->events->listEvents($calendarId);
+        $optParams = array(
+            'timeMin' => date('c')
+          );
+        $events = $service->events->listEvents($calendarId, $optParams);
         $data = array();
         foreach ($events->getItems() as $event) {
             array_push($data, array(
@@ -51,6 +54,28 @@ class GoogleCalendarAppointmentManager extends GoogleCalendarAbstractManager
         $client = $this->getClient();
         $service = new Google_Service_Calendar($client);
         $event = $service->events->insert($calendarId, $event);
+    }
+
+    public function existEventInSameTime($selectedService, $order){
+        $startDate=new DateTime($order['date']);
+        $endDate=new DateTime($order['date']);
+        $endDate->add(new DateInterval('PT'.$selectedService->during.'M'));
+
+        $startCalendarDateTime = new \Google_Service_Calendar_EventDateTime();
+        $startCalendarDateTime->setDateTime($startDate->format(\DateTime::RFC3339));
+
+        $endCalendarDateTime = new \Google_Service_Calendar_EventDateTime();
+        $endCalendarDateTime->setDateTime($endDate->format(\DateTime::RFC3339));
+
+        $client = $this->getClient();
+        $service = new Google_Service_Calendar($client);
+        $calendarId = $this->getCalandarId();
+        $optParams = array(
+            'timeMin' => $startCalendarDateTime->getDateTime(),
+            'timeMax'=> $endCalendarDateTime->getDateTime()
+          );
+        $events = $service->events->listEvents($calendarId, $optParams);
+        return !empty($events->getItems());
     }
 
 

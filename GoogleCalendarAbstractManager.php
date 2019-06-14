@@ -1,7 +1,7 @@
 <?php
 
 
-define('SCOPES', implode(' ', array(
+define('SCOPES_APPOINTEMENT_PLUGIN', implode(' ', array(
 	Google_Service_Calendar::CALENDAR) // CALENDAR_READONLY
 ));
 putenv('GOOGLE_APPLICATION_CREDENTIALS='. __DIR__ .'/credentials/service-account.json');
@@ -40,7 +40,7 @@ class GoogleCalendarAbstractManager
     protected function getClient() {
         $client = new Google_Client();
         $client->useApplicationDefaultCredentials();
-        $client->setScopes(SCOPES);
+        $client->setScopes(SCOPES_APPOINTEMENT_PLUGIN);
       
         return $client;
       }
