@@ -1,3 +1,8 @@
+@font-face {
+    font-family: balqis;
+    src:url(/wp-content/plugins/wp-appointment-plugin/fonts/Balqis.ttf), url(/wp-content/plugins/wp-appointment-plugin/fonts/Balqis.ttf);
+}
+
 .customize-support{
     background-color: #fdedb2;
 }
@@ -15,7 +20,7 @@
     border-radius: 25px;
 }
  h2{
-    font-family: bahagia;
+    font-family: balqis;
     font-size: 2em;
     color: gray;
 }
@@ -107,7 +112,15 @@ td{
     content: "\f061";
     
 }
-
+.untouchedBackground{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: lightgray;
+    opacity: 0.50;
+}
 #contact{
     position: fixed;
     margin: auto;
@@ -117,4 +130,21 @@ td{
     transform: translate(-50%, -70%);
     transform-origin: 0 0;
 }
+#contact .close{
+    background: none;
+    border: none;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+#contact label{
+    display: inline-block;
+    width: 25%;
+}
+#contact input[type=text], #contact input[type=phone]{
+    display: inline-block;
+    width: 67%;
+}
+
 

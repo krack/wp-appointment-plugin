@@ -14,7 +14,7 @@
             </div>
         </div>
     </div>
-    <div id="calendar" v-if="view === 'calendar'">
+    <div id="calendar" v-if="view === 'calendar'" >
 
         <button v-on:click="cancelOrder()">retour</button>
         <h2>{{selectedService.name}}</h2>
@@ -45,39 +45,40 @@
             </table>
         </div>
     </div>
-    <div id="contact" v-if="contact">
-        <h2>Confirmation</h2>
-        <form v-on:submit.prevent="checkForm">
+    <div id="contact-panel"  v-if="contact">
+        <div class="untouchedBackground" v-on:click="closeContact()"></div>
+        <div id="contact">
+            <h2>Confirmation</h2>
+            <button v-on:click="closeContact()"  class="close">x</button>
+            <form v-on:submit.prevent="checkForm">
 
-        <p>
-            <label for="name">Nom</label>
-            <input
-            id="name"
-            v-model="name"
-            type="text"
-            name="name"
-            required
-            >
-        </p>
+                <p>
+                    <label for="name">Nom</label>
+                    <input
+                    id="name"
+                    v-model="name"
+                    type="text"
+                    name="name"
+                    required
+                    >
+                </p>
 
-        <p>
-            <label for="age">Téléphone</label>
-            <input
-            id="phone"
-            v-model="phone"
-            type="phone"
-            name="phone"
-            required>
-        </p>
+                <p>
+                    <label for="age">Téléphone</label>
+                    <input
+                    id="phone"
+                    v-model="phone"
+                    type="phone"
+                    name="phone"
+                    required>
+                </p>
+                <input
+                type="submit"
+                value="Confirmer"
+                />
 
-        <p>
-            <input
-            type="submit"
-            value="Confirmer"
-            >
-        </p>
-
-        </form>
+            </form>
+        </div>
     </div>
 
 </div>

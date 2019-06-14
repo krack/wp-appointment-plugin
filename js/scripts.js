@@ -117,8 +117,11 @@
                     hourEnd = cleanDate(hourEnd);
 
                     if (
-                        (hourStart <= appointmentStartDate && appointmentStartDate <= hourEnd)
-                        || (hourStart <= appointmentEndDate && appointmentEndDate <= hourEnd)) {
+                        (appointmentStartDate <= hourStart && appointmentEndDate >= hourEnd)
+                        ||
+                        (hourStart <= appointmentStartDate && appointmentStartDate < hourEnd)
+                        ||
+                        (hourStart < appointmentEndDate && appointmentEndDate <= hourEnd)) {
                         busy = true;
                     }
                 });
@@ -304,6 +307,9 @@
                 this.weekDiff = this.weekDiff + diff;
                 this.loadWeek();
                 this.workingDay = this.workingDay.slice(0);
+            },
+            closeContact() {
+                this.contact = false;
             }
         }
     })
